@@ -42,9 +42,11 @@
 #define RST_PIN         9          // Configurable, see typical pin layout above
 #define SS_PIN          10         // Configurable, see typical pin layout above
 
-#define BT_TX           5
-#define BT_RX           6
+#define BT_TX           7
+#define BT_RX           8
 #define SERVO_PIN       3
+#define NOTICE_OPENED_LED      5
+#define NOTICE_CLOSED_LED      6
 
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
@@ -57,6 +59,8 @@ void setup() {
   BT_Serial.begin(9600);
   door_servo.attach(SERVO_PIN);
   pinMode(SERVO_PIN, INPUT);
+  pinMode(NOTICE_OPENED_LED, OUTPUT);
+  pinMode(NOTICE_CLOSED_LED, OUTPUT);
   Serial.println("Begin...");
   Serial.begin(4800);		// Initialize serial communications with the PC
   while (!Serial);		// Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
@@ -67,21 +71,47 @@ void setup() {
 }
 
 void open_door() {
+  door_opening = 1;
+  analogWrite(NOTICE_OPENED_LED, 255);
+  analogWrite(NOTICE_CLOSED_LED, 0);
   Serial.println("open!");
   door_servo.attach(SERVO_PIN);
   door_servo.write(180);
-  delay(8000);
+  for (int j = 0; j <= 4; j++) {
+    for (int l = 200; l > 0; l--) {
+      analogWrite(NOTICE_OPENED_LED, l);
+      delay(5);
+    }
+    for (int l = 0; l < 200; l++) {
+      analogWrite(NOTICE_OPENED_LED, l);
+      delay(5);
+    }
+  }
+  // delay(8000);
   door_servo.write(0);
   delay(500);
+  digitalWrite(NOTICE_OPENED_LED, HIGH);
   pinMode(SERVO_PIN, INPUT);
-  door_opening = 1;
 }
 
 void close_door() {
+  analogWrite(NOTICE_OPENED_LED, 0);
+  analogWrite(NOTICE_CLOSED_LED, 255);
   Serial.println("close!");
   door_servo.attach(SERVO_PIN);
   door_servo.write(0);
-  delay(5000);
+  for (int j = 0; j <= 2; j++) {
+    for (int l = 200; l > 0; l--) {
+      analogWrite(NOTICE_CLOSED_LED, l);
+      delay(5);
+    }
+    for (int l = 0; l < 200; l++) {
+      analogWrite(NOTICE_CLOSED_LED, l);
+      delay(5);
+    }
+  }
+  digitalWrite(NOTICE_CLOSED_LED, HIGH);
+  // delay(5000);
   pinMode(SERVO_PIN, INPUT);
   door_opening = 0;
 }
@@ -162,7 +192,7 @@ void print_rfid_uid(byte* uid, int uid_size) {
 int get_eeprom_none_pointer(int rfid_size) {
   Serial.println("get pointer: ");
   Serial.println(rfid_size);
-  
+
   for (int index = 0; index < EEPROM.length(); index += rfid_size) {
     Serial.print(EEPROM[ index ]);
     Serial.print("\t");

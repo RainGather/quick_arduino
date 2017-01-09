@@ -53,7 +53,7 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
 SoftwareSerial BT_Serial(BT_TX, BT_RX);
 Servo door_servo;
 String BT_String;
-int door_opening = 0;
+int door_opening = 1;
 
 void setup() {
   BT_Serial.begin(9600);
@@ -126,6 +126,13 @@ void loop() {
     }
     if (BT_String == "closeqwf") {
       close_door();
+    }
+    if (BT_String == "changeqwf") {
+      if (door_opening == 1) {
+        close_door();
+      } else {
+        open_door();
+      }
     }
     if (BT_String == "delcardqwf") {
       del_saved_rfid();

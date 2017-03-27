@@ -1,9 +1,11 @@
-// s1、s2至少大于10比较好
-
-int s1 = 60; // 一圈的时间
-int s2 = 60; // 一圈的时间
-int n1;
-int n2;
+int scale = 100;
+int s1 = 20 * scale; // 一圈的时间
+// int s2 = 60000; // 一圈的时间
+float r = 100; // cm
+float leng = 20.5; // cm
+long int s2 = s1 + (leng / r) * s1;
+float n1;
+float n2;
 
 void setup() {
   // put your setup code here, to run once:
@@ -16,12 +18,15 @@ void setup() {
   pinMode(10, OUTPUT);
   pinMode(11, OUTPUT);
   Serial.begin(9600);
+  Serial.println(s1);
+  Serial.println(s2);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  n1 = int(millis() % s1 / (s1 / 4.0));
-  n2 = int(millis() % s2 / (s2 / 4.0));
+  // Serial.println(millis() * 100);
+  n1 = millis() * scale % s1 / (s1 / 4.0);
+  n2 = millis() * scale % s2 / (s2 / 4.0);
   if (n1 < 1) {
     digitalWrite(6, LOW);
     digitalWrite(3, HIGH);

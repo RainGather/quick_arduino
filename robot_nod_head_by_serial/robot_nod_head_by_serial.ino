@@ -1,4 +1,6 @@
 #include <Servo.h>
+#define DEBUG false
+#define LED_PIN 13
 
 int d = 90;
 int v = 50;
@@ -27,7 +29,16 @@ bool serial_input() {
   if (Serial.available()) {
     s = Serial.readString();
     f = s[0];
-    v = s.substring(1).toInt();
+    if (DEBUG) {
+      if (f == 'd') {
+        digitalWrite(LED_PIN, HIGH);
+        delay(200);
+        digitalWrite(LED_PIN, LOW);
+      }
+    }
+    if (s.substring(1).toInt()) {
+      v = s.substring(1).toInt();
+    }
     Serial.print(s);
     Serial.print('\t');
     Serial.print(f);
@@ -41,6 +52,7 @@ bool serial_input() {
 void setup() {
   Serial.begin(9600);
   head.attach(6);
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void loop() {

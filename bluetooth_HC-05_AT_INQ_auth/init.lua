@@ -8,6 +8,7 @@ gpio.mode(4, gpio.OUTPUT)
 gpio.mode(5, gpio.INPUT) -- D1 pin
 
 
+cset("uart", "begin")
 function cset(key, value)
     http.get("http://iot_test.yiyai.net/api/set?api_id=59c89d4b48a91f00075376eb&token=SOFLs3uXQI&key="..key.."&value="..value, nil, function(code, data)
         if (code < 0) then
